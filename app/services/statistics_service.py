@@ -23,7 +23,9 @@ async def process_user_event(db: Session, event: UserStatisticsEvent):
             update_statistics(db, existing_stat, entregado=True)
         elif event.event == "Calificado":
             # Si es calificado es porque ya se entregó
-            update_statistics(db, existing_stat, entregado=True, calificacion=event.data.nota)
+            update_statistics(
+                db, existing_stat, entregado=True, calificacion=event.data.nota
+            )
     else:
         # Crear nueva estadística
         # Ver los distintos casos que me pueden llegar aca
@@ -34,7 +36,7 @@ async def process_user_event(db: Session, event: UserStatisticsEvent):
             titulo=event.data.titulo,
             tipo=event.notification_type,
             entregado=True,
-            calificacion=event.data.nota, # Este puede estar o no
+            calificacion=event.data.nota,  # Este puede estar o no
         )
 
 
@@ -51,7 +53,7 @@ async def process_course_event(db: Session, event: CourseStatisticsEvent):
         )
 
         if existing_stat:
-            pass # TODO: Podria llegar a actualizar el titulo
+            pass  # TODO: Podria llegar a actualizar el titulo
         else:
             create_statistics(
                 db,

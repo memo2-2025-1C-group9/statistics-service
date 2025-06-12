@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from app.core.auth import get_service_auth
 from app.core.config import settings
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Inicializa los servicios necesarios al arrancar la aplicación"""

@@ -1,7 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Float
-from sqlalchemy.ext.declarative import declarative_base
-
-Base = declarative_base()
+from app.db.base import Base
 
 
 class Statistics(Base):

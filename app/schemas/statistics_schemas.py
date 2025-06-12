@@ -1,0 +1,42 @@
+from pydantic import BaseModel
+from typing import Literal, Optional
+
+
+class StatisticsEventData(BaseModel):
+    titulo: str
+    nota: Optional[float] = None
+    entregado: bool = False
+
+
+class UserStatisticsEvent(BaseModel):
+    id_user: int
+    notification_type: Literal["Examen", "Tarea"]
+    event: Literal["Entregado", "Calificado"]
+    data: StatisticsEventData
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id_user": 1,
+                "notification_type": "Tarea",
+                "event": "Entregado",
+                "data": {"titulo": "Tarea 1", "entregado": True, "nota": None},
+            }
+        }
+
+
+class CourseStatisticsEvent(BaseModel):
+    id_course: str
+    notification_type: Literal["Examen", "Tarea"]
+    event: Literal["Nuevo", "Actualizado"]
+    data: StatisticsEventData
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "id_course": "curso-123",
+                "notification_type": "Tarea",
+                "event": "Nuevo",
+                "data": {"titulo": "Tarea 1", "entregado": False, "nota": None},
+            }
+        }

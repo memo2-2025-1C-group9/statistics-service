@@ -22,17 +22,19 @@ async def process_user_event(db: Session, event: UserStatisticsEvent):
         if event.event == "Entregado":
             update_statistics(db, existing_stat, entregado=True)
         elif event.event == "Calificado":
-            update_statistics(db, existing_stat, calificacion=event.data.nota)
+            # Si es calificado es porque ya se entregó
+            update_statistics(db, existing_stat, entregado=True, calificacion=event.data.nota)
     else:
         # Crear nueva estadística
         # Ver los distintos casos que me pueden llegar aca
+        # Siempre deberia existir en este punto, un usuario no puede crear la tarea o examen
         create_statistics(
             db,
             user_id=event.id_user,
             titulo=event.data.titulo,
             tipo=event.notification_type,
-            entregado=event.data.entregado,
-            calificacion=event.data.nota,
+            entregado=True,
+            calificacion=event.data.nota, # Este puede estar o no
         )
 
 
@@ -40,4 +42,21 @@ async def process_course_event(db: Session, event: CourseStatisticsEvent):
     # Obtener usuarios del curso
     user_list = await get_course_users(event.id_course)
 
-    # TODO: Crear estadísticas para cada estudiante
+    for id_user in user_list:
+        existing_stat = find_statistics_by_user_and_title(
+            db,
+            user_id=id_user,
+            titulo=event.data.titulo,
+            tipo=event.notification_type,
+        )
+
+        if existing_stat:
+            pass # TODO: Podria llegar a actualizar el titulo
+        else:
+            create_statistics(
+                db,
+                user_id=id_user,
+                titulo=event.data.titulo,
+                tipo=event.notification_type,
+                entregado=False,
+            )

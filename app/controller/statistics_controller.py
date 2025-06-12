@@ -8,4 +8,4 @@ def handle_save_user_statistics(db: Session, event: UserStatisticsEvent):
 
 
 async def handle_save_course_statistics(db: Session, event: CourseStatisticsEvent):
-    return process_course_event(db, event)
+    return await process_course_event(db, event)

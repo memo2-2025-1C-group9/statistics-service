@@ -55,6 +55,19 @@ jobs:
         run: cp .env.example .env.development
 
       - name: Start Docker services
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          
+          AUTH_SERVICE_URL: ${{ secrets.AUTH_SERVICE_URL }}
+          COURSES_SERVICE_URL: ${{ secrets.COURSES_SERVICE_URL }}
+          
+          SERVICE_USERNAME: ${{ secrets.SERVICE_USERNAME }}
+          SERVICE_PASSWORD: ${{ secrets.SERVICE_PASSWORD }}
+
         run: |
           docker-compose --profile app up -d
           docker-compose logs -f &
@@ -86,6 +99,19 @@ jobs:
           ENVIRONMENT: test
           HOST: 0.0.0.0
           PORT: 8080
+
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DATABASE_URL: postgresql://${{ secrets.DB_USER }}:${{ secrets.DB_PASSWORD }}@${{ secrets.DB_HOST }}:${{ secrets.DB_PORT }}/${{ secrets.DB_NAME }}?sslmode=require
+          
+          AUTH_SERVICE_URL: ${{ secrets.AUTH_SERVICE_URL }}
+          COURSES_SERVICE_URL: ${{ secrets.COURSES_SERVICE_URL }}
+          
+          SERVICE_USERNAME: ${{ secrets.SERVICE_USERNAME }}
+          SERVICE_PASSWORD: ${{ secrets.SERVICE_PASSWORD }}
         run: |
           PYTHONPATH=. pytest --cov=app --cov=tests --cov-report=term-missing --cov-report=xml --cov-report=html
 

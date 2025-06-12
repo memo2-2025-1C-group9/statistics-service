@@ -3,19 +3,22 @@ version: '3.8'
 services:
   app:
     build: .
-    environment:
-      - DD_AGENT_HOST=datadog-agent
-      - DD_SERVICE=app
-      - DD_ENV=${ENVIRONMENT}
-    networks:
-      - datadog-agent-monitoring
+    command: ["/app/entrypoint.sh", "app"]
     ports:
       - "8080:8080"
     volumes:
       - .:/app
+    environment:
+      - ENVIRONMENT=development
     env_file:
       - .env.development
 
-networks:
-  datadog-agent-monitoring:
-    external: true
+  test:
+    build: .
+    command: ["/app/entrypoint.sh", "test"]
+    environment:
+      - ENVIRONMENT=test
+    volumes:
+      - .:/app
+    profiles:
+      - test

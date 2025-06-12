@@ -23,6 +23,8 @@ EXPOSE $PORT
 
 # Establecer la variable de entorno PYTHONPATH para que pytest encuentre el módulo app
 ENV PYTHONPATH=/app
+ENV HOST=0.0.0.0
+ENV PORT=8080
 
 # Ejecutar el script de entrada cuando el contenedor se inicie
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh", "app"]

@@ -309,7 +309,7 @@ def test_save_course_statistics_update_succes(
     client, mock_validate_user, mock_get_course_users, db_session
 ):
     # Simular que la tarea ya existe y se actualiza
-    
+
     event_data = {
         "id_course": "curso-123",
         "assessment_id": "tarea-456",
@@ -354,7 +354,7 @@ def test_save_course_statistics_update_succes(
     for stat in stats:
         assert stat.entregado is False
         assert stat.calificacion is None
-    
+
     stats_tarea1 = (
         db_session.query(Statistics)
         .filter(Statistics.titulo == "Tarea 1", Statistics.tipo == "Tarea")

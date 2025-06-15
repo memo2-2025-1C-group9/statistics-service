@@ -54,9 +54,7 @@ async def process_course_event(db: Session, event: CourseStatisticsEvent):
         )
 
         if existing_stat:
-            update_statistics(
-                db, existing_stat, titulo=event.data.titulo
-            )
+            update_statistics(db, existing_stat, titulo=event.data.titulo)
         else:
             create_statistics(
                 db,

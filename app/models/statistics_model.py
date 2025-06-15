@@ -11,3 +11,4 @@ class Statistics(Base):
     tipo = Column(String, nullable=False)  # "Examen" o "Tarea"
     entregado = Column(Boolean, default=False)
     calificacion = Column(Float, nullable=True)
+    assessment_id = Column(String, nullable=False)

@@ -10,6 +10,7 @@ class StatisticsEventData(BaseModel):
 
 class UserStatisticsEvent(BaseModel):
     id_user: int
+    assessment_id: str
     notification_type: Literal["Examen", "Tarea"]
     event: Literal["Entregado", "Calificado"]
     data: StatisticsEventData
@@ -18,6 +19,7 @@ class UserStatisticsEvent(BaseModel):
         json_schema_extra = {
             "example": {
                 "id_user": 1,
+                "assessment_id": "tarea-456",
                 "notification_type": "Tarea",
                 "event": "Entregado",
                 "data": {"titulo": "Tarea 1", "entregado": True, "nota": None},
@@ -27,6 +29,7 @@ class UserStatisticsEvent(BaseModel):
 
 class CourseStatisticsEvent(BaseModel):
     id_course: str
+    assessment_id: str
     notification_type: Literal["Examen", "Tarea"]
     event: Literal["Nuevo", "Actualizado"]
     data: StatisticsEventData
@@ -35,6 +38,7 @@ class CourseStatisticsEvent(BaseModel):
         json_schema_extra = {
             "example": {
                 "id_course": "curso-123",
+                "assessment_id": "tarea-456",
                 "notification_type": "Tarea",
                 "event": "Nuevo",
                 "data": {"titulo": "Tarea 1", "entregado": False, "nota": None},

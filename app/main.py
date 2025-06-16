@@ -35,6 +35,7 @@ app = FastAPI(lifespan=lifespan)
 
 # TODO: Logging
 # TODO: Errores RFC
+# TODO: MANEJAR EXCEPCIONES
 
 app.include_router(statistics_router)
 

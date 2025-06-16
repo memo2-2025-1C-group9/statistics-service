@@ -11,6 +11,7 @@ class StatisticsEventData(BaseModel):
 class UserStatisticsEvent(BaseModel):
     id_user: int
     assessment_id: str
+    course_id: str
     notification_type: Literal["Examen", "Tarea"]
     event: Literal["Entregado", "Calificado"]
     data: StatisticsEventData
@@ -30,6 +31,7 @@ class UserStatisticsEvent(BaseModel):
 class CourseStatisticsEvent(BaseModel):
     id_course: str
     assessment_id: str
+    course_id: str
     notification_type: Literal["Examen", "Tarea"]
     event: Literal["Nuevo", "Actualizado"]
     data: StatisticsEventData

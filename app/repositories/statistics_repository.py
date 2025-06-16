@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from app.models.statistics_model import Statistics
-from typing import Optional
+from typing import List, Optional, Dict, Tuple
 
 
 def find_statistics_by_user_and_assessment_id(
@@ -20,17 +21,18 @@ def find_statistics_by_user_and_assessment_id(
 def update_statistics(
     db: Session,
     statistics: Statistics,
+    titulo: str = None,
     entregado: bool = None,
     calificacion: float = None,
-    titulo: str = None,
 ) -> Statistics:
+    if titulo is not None:
+        statistics.titulo = titulo
     if entregado is not None:
         statistics.entregado = entregado
     if calificacion is not None:
         statistics.calificacion = calificacion
-    if titulo is not None:
-        statistics.titulo = titulo
     db.commit()
+    db.refresh(statistics)
     return statistics
 
 
@@ -41,16 +43,50 @@ def create_statistics(
     titulo: str,
     tipo: str,
     entregado: bool,
-    calificacion: Optional[float] = None,
+    calificacion: float = None,
+    course_id: str = None,
 ) -> Statistics:
-    new_stat = Statistics(
+    statistics = Statistics(
         user_id=user_id,
         assessment_id=assessment_id,
         titulo=titulo,
         tipo=tipo,
         entregado=entregado,
         calificacion=calificacion,
+        course_id=course_id,
     )
-    db.add(new_stat)
+    db.add(statistics)
     db.commit()
-    return new_stat
+    db.refresh(statistics)
+    return statistics
+
+
+def get_average_grade(
+    db: Session, user_id: Optional[int] = None, course_id: Optional[str] = None
+):
+    base_query = db.query(func.avg(Statistics.calificacion)).filter(
+        Statistics.calificacion.isnot(None)
+    )
+
+    if user_id is not None:
+        base_query = base_query.filter(Statistics.user_id == user_id)
+    if course_id is not None:
+        base_query = base_query.filter(Statistics.course_id == course_id)
+
+    return base_query.scalar() or 0.0
+
+
+def get_completion_stats(
+    db: Session, user_id: Optional[int] = None, course_id: Optional[str] = None
+):
+    base_query = db.query(Statistics)
+
+    if user_id is not None:
+        base_query = base_query.filter(Statistics.user_id == user_id)
+    if course_id is not None:
+        base_query = base_query.filter(Statistics.course_id == course_id)
+
+    total = base_query.count()
+    completed = base_query.filter(Statistics.entregado == True).count()
+
+    return total, completed

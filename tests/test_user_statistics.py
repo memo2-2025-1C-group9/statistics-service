@@ -68,6 +68,7 @@ def test_save_user_statistics_success(client, mock_validate_user, db_session):
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Entregado",
+        "course_id": "curso-123",
         "data": {"titulo": "Tarea 1", "entregado": True},
     }
 
@@ -100,6 +101,7 @@ def test_save_user_statistics_unauthorized(client, mock_validate_user):
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Entregado",
+        "course_id": "curso-123",
         "data": {"titulo": "Tarea 1", "entregado": True, "nota": None},
     }
 
@@ -121,6 +123,7 @@ def test_save_user_statistics_with_grade(client, mock_validate_user, db_session)
         "assessment_id": "tarea-456",
         "notification_type": "Examen",
         "event": "Calificado",
+        "course_id": "curso-123",
         "data": {"titulo": "Examen 1", "entregado": True, "nota": 8.5},
     }
 
@@ -153,6 +156,7 @@ def test_save_user_statistics_invalid_event_type(client, mock_validate_user):
         "assessment_id": "tarea-456",
         "notification_type": "InvalidType",
         "event": "Entregado",
+        "course_id": "curso-123",
         "data": {"titulo": "Tarea 1", "entregado": True, "nota": None},
     }
 
@@ -171,6 +175,7 @@ def test_save_user_statistics_invalid_event(client, mock_validate_user):
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "InvalidEvent",
+        "course_id": "curso-123",
         "data": {"titulo": "Tarea 1", "entregado": True, "nota": None},
     }
 
@@ -192,6 +197,7 @@ def test_save_course_statistics_success(
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Nuevo",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 1",
         },
@@ -225,6 +231,7 @@ def test_save_course_statistics_unauthorized(
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Nuevo",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 1",
         },
@@ -249,6 +256,7 @@ def test_save_course_statistics_course_service_error(
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Nuevo",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 1",
         },
@@ -271,6 +279,7 @@ def test_save_course_statistics_invalid_event_type(client, mock_validate_user):
         "assessment_id": "tarea-456",
         "notification_type": "InvalidType",
         "event": "Nuevo",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 1",
         },
@@ -291,6 +300,7 @@ def test_save_course_statistics_invalid_event(client, mock_validate_user):
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "InvalidEvent",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 1",
         },
@@ -315,6 +325,7 @@ def test_save_course_statistics_update_succes(
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Nuevo",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 1",
         },
@@ -331,6 +342,7 @@ def test_save_course_statistics_update_succes(
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Nuevo",
+        "course_id": "curso-123",
         "data": {
             "titulo": "Tarea 10",
         },

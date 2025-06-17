@@ -95,7 +95,7 @@ async def save_course_statistics(
 
 @router.get("/statistics/global")
 async def get_global_statistics(db: Session = Depends(get_db)):
-    try:  
+    try:
         return await handle_get_global_statistics(db)
     except HTTPException:
         raise
@@ -115,7 +115,7 @@ async def get_global_statistics(db: Session = Depends(get_db)):
 async def get_user_statistics(
     user_id: int, course_id: str, db: Session = Depends(get_db)
 ):
-    try:  
+    try:
         return await handle_get_user_statistics(db, user_id, course_id)
     except HTTPException:
         raise

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.statistics_model import Statistics
-from typing import List, Optional, Dict, Tuple
+from typing import Optional
 
 
 def find_statistics_by_user_and_assessment_id(
@@ -90,3 +90,24 @@ def get_completion_stats(
     completed = base_query.filter(Statistics.entregado == True).count()
 
     return total, completed
+
+
+def get_course_statistics(db: Session, course_id: str):
+    return (
+        db.query(Statistics)
+        .filter(Statistics.course_id == course_id)
+        .order_by(Statistics.date.desc())
+        .all()
+    )
+
+
+def get_user_course_statistics(db: Session, user_id: int, course_id: str):
+    return (
+        db.query(Statistics)
+        .filter(
+            Statistics.user_id == user_id,
+            Statistics.course_id == course_id,
+        )
+        .order_by(Statistics.date.desc())
+        .all()
+    )

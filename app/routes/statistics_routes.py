@@ -10,7 +10,8 @@ from app.controller.statistics_controller import (
     handle_save_user_statistics,
     handle_save_course_statistics,
     handle_get_global_statistics,
-    handle_get_user_statistics,
+    handle_get_course_detailed_statistics,
+    handle_get_user_detailed_statistics,
 )
 from app.controller.user_controller import handle_validate_user
 
@@ -111,12 +112,35 @@ async def get_global_statistics(db: Session = Depends(get_db)):
         )
 
 
-@router.get("/statistics/user/{course_id}/{user_id}")
-async def get_user_statistics(
-    user_id: int, course_id: str, db: Session = Depends(get_db)
+@router.get("/statistics/course/{course_id}")
+async def get_course_detailed_statistics(
+    course_id: str,
+    db: Session = Depends(get_db),
 ):
     try:
-        return await handle_get_user_statistics(db, user_id, course_id)
+        return await handle_get_course_detailed_statistics(db, course_id)
+    except HTTPException as e:
+        raise
+    except Exception as e:
+        logging.error(
+            f"Exception no manejada al obtener las estadisticas del curso: {str(e)}"
+        )
+        logging.error(traceback.format_exc())
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erroreee interno del servidor",
+        )
+
+
+@router.get("/statistics/user/{course_id}/{user_id}")
+async def get_user_detailed_statistics(
+    user_id: int,
+    course_id: str,
+    db: Session = Depends(get_db),
+):
+    try:
+        return await handle_get_user_detailed_statistics(db, user_id, course_id)
     except HTTPException:
         raise
     except Exception as e:

@@ -1,5 +1,6 @@
-from sqlalchemy import Column, Integer, String, Boolean, Float
+from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime
 from app.db.base import Base
+from datetime import datetime
 
 
 class Statistics(Base):
@@ -13,3 +14,4 @@ class Statistics(Base):
     entregado = Column(Boolean, default=False)
     calificacion = Column(Float, nullable=True)
     assessment_id = Column(String, nullable=False)
+    date = Column(DateTime, default=datetime.utcnow, nullable=False)

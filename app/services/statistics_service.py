@@ -7,8 +7,11 @@ from app.repositories.statistics_repository import (
     create_statistics,
     get_average_grade,
     get_completion_stats,
+    get_course_statistics,
+    get_user_course_statistics,
 )
-from typing import Dict
+from typing import Dict, List
+import logging
 
 
 async def process_user_event(db: Session, event: UserStatisticsEvent):
@@ -45,7 +48,7 @@ async def process_user_event(db: Session, event: UserStatisticsEvent):
 
 async def process_course_event(db: Session, event: CourseStatisticsEvent):
     # Obtener usuarios del curso
-    user_list = await get_course_users(event.id_course)
+    user_list = await get_course_users(event.course_id)
 
     for id_user in user_list:
         existing_stat = find_statistics_by_user_and_assessment_id(
@@ -65,7 +68,7 @@ async def process_course_event(db: Session, event: CourseStatisticsEvent):
                 titulo=event.data.titulo,
                 tipo=event.notification_type,
                 entregado=False,
-                course_id=event.id_course,
+                course_id=event.course_id,
             )
 
 
@@ -90,8 +93,45 @@ async def get_global_statistics(db: Session):
     }
 
 
-async def get_user_statistics(db: Session, user_id: int, course_id: str):
-    # Obtener promedio de calificaciones del usuario
+async def get_course_detailed_statistics(db: Session, course_id: str):
+    avg_grade = get_average_grade(db, course_id=course_id)
+
+    # Obtener estadisticas de finalizacion
+    total_assignments, completed_assignments = get_completion_stats(
+        db, course_id=course_id
+    )
+
+    completion_rate = (
+        (completed_assignments / total_assignments * 100)
+        if total_assignments > 0
+        else 0
+    )
+
+    statistics = get_course_statistics(db, course_id)
+    return {
+        "promedio_calificaciones": round(avg_grade, 2),
+        "tasa_finalizacion": round(completion_rate, 2),
+        "total_asignaciones": total_assignments,
+        "asignaciones_completadas": completed_assignments,
+        "course_id": course_id,
+        "logs": [
+            {
+                "id": stat.id,
+                "user_id": stat.user_id,
+                "course_id": stat.course_id,
+                "titulo": stat.titulo,
+                "tipo": stat.tipo,
+                "entregado": stat.entregado,
+                "calificacion": stat.calificacion,
+                "assessment_id": stat.assessment_id,
+                "fecha": stat.date.isoformat() if stat.date else None,
+            }
+            for stat in statistics
+        ],
+    }
+
+
+async def get_user_detailed_statistics(db: Session, user_id: int, course_id: str):
     avg_grade = get_average_grade(db, user_id=user_id, course_id=course_id)
 
     # Obtener estadisticas de finalizacion
@@ -104,6 +144,7 @@ async def get_user_statistics(db: Session, user_id: int, course_id: str):
         if total_assignments > 0
         else 0
     )
+    statistics = get_user_course_statistics(db, user_id, course_id)
 
     return {
         "promedio_calificaciones": round(avg_grade, 2),
@@ -111,4 +152,18 @@ async def get_user_statistics(db: Session, user_id: int, course_id: str):
         "total_asignaciones": total_assignments,
         "asignaciones_completadas": completed_assignments,
         "course_id": course_id,
+        "logs": [
+            {
+                "id": stat.id,
+                "user_id": stat.user_id,
+                "course_id": stat.course_id,
+                "titulo": stat.titulo,
+                "tipo": stat.tipo,
+                "entregado": stat.entregado,
+                "calificacion": stat.calificacion,
+                "assessment_id": stat.assessment_id,
+                "fecha": stat.date.isoformat(),
+            }
+            for stat in statistics
+        ],
     }

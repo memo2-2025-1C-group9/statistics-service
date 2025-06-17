@@ -29,7 +29,6 @@ class UserStatisticsEvent(BaseModel):
 
 
 class CourseStatisticsEvent(BaseModel):
-    id_course: str
     assessment_id: str
     course_id: str
     notification_type: Literal["Examen", "Tarea"]
@@ -39,7 +38,7 @@ class CourseStatisticsEvent(BaseModel):
     class Config:
         json_schema_extra = {
             "example": {
-                "id_course": "curso-123",
+                "course_id": "curso-123",
                 "assessment_id": "tarea-456",
                 "notification_type": "Tarea",
                 "event": "Nuevo",

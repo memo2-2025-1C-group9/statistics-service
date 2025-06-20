@@ -215,7 +215,6 @@ def test_get_user_statistics_with_start_date(client: TestClient, sample_statisti
     assert data["promedio_calificaciones"] == pytest.approx(7.5, 0.01)  # Examen 1
 
 
-
 def test_get_user_statistics_with_end_date(client: TestClient, sample_statistics):
     response = client.get("/statistics/user/curso1/1?end_date=2023-10-11")
     assert response.status_code == 200
@@ -237,4 +236,6 @@ def test_get_user_statistics_with_date_range(client: TestClient, sample_statisti
     assert data["total_asignaciones"] == 2
     assert data["asignaciones_completadas"] == 2
     assert data["tasa_finalizacion"] == 100.0
-    assert data["promedio_calificaciones"] == pytest.approx(8.25, 0.01)  # Tarea 2 y Examen 1
+    assert data["promedio_calificaciones"] == pytest.approx(
+        8.25, 0.01
+    )  # Tarea 2 y Examen 1

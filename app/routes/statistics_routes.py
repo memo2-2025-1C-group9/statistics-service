@@ -43,7 +43,7 @@ async def save_user_statistics(
 
         return {
             "success": True,
-            "message": "Estadística de usuario procesada correctamente"
+            "message": "Estadística de usuario procesada correctamente",
         }
     except HTTPException:
         raise
@@ -80,8 +80,8 @@ async def save_course_statistics(
 
         return {
             "success": True,
-            "message": "Estadísticas de curso procesadas correctamente"
-        } 
+            "message": "Estadísticas de curso procesadas correctamente",
+        }
     except HTTPException:
         raise
     except Exception as e:

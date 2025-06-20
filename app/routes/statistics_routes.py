@@ -1,7 +1,7 @@
 import logging
 import traceback
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 from app.schemas.statistics_schemas import UserStatisticsEvent, CourseStatisticsEvent
@@ -14,6 +14,7 @@ from app.controller.statistics_controller import (
     handle_get_user_detailed_statistics,
 )
 from app.controller.user_controller import handle_validate_user
+from datetime import date
 
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -117,10 +118,14 @@ async def get_global_statistics(db: Session = Depends(get_db)):
 @router.get("/statistics/course/{course_id}")
 async def get_course_detailed_statistics(
     course_id: str,
+    start_date: date = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
+    end_date: date = Query(None, description="Fecha de fin (YYYY-MM-DD)"),
     db: Session = Depends(get_db),
 ):
     try:
-        return await handle_get_course_detailed_statistics(db, course_id)
+        return await handle_get_course_detailed_statistics(
+            db, course_id, start_date, end_date
+        )
     except HTTPException as e:
         raise
     except Exception as e:
@@ -131,7 +136,7 @@ async def get_course_detailed_statistics(
 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erroreee interno del servidor",
+            detail="Error interno del servidor",
         )
 
 
@@ -139,10 +144,14 @@ async def get_course_detailed_statistics(
 async def get_user_detailed_statistics(
     user_id: int,
     course_id: str,
+    start_date: date = Query(None, description="Fecha de inicio (YYYY-MM-DD)"),
+    end_date: date = Query(None, description="Fecha de fin (YYYY-MM-DD)"),
     db: Session = Depends(get_db),
 ):
     try:
-        return await handle_get_user_detailed_statistics(db, user_id, course_id)
+        return await handle_get_user_detailed_statistics(
+            db, user_id, course_id, start_date, end_date
+        )
     except HTTPException:
         raise
     except Exception as e:

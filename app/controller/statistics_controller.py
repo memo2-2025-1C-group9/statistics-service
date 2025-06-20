@@ -21,11 +21,15 @@ async def handle_get_global_statistics(db: Session):
     return await get_global_statistics(db)
 
 
-async def handle_get_course_detailed_statistics(db: Session, course_id: str):
-    return await get_course_detailed_statistics(db, course_id)
+async def handle_get_course_detailed_statistics(
+    db: Session, course_id: str, start_date=None, end_date=None
+):
+    return await get_course_detailed_statistics(db, course_id, start_date, end_date)
 
 
 async def handle_get_user_detailed_statistics(
-    db: Session, user_id: int, course_id: str
+    db: Session, user_id: int, course_id: str, start_date=None, end_date=None
 ):
-    return await get_user_detailed_statistics(db, user_id, course_id)
+    return await get_user_detailed_statistics(
+        db, user_id, course_id, start_date, end_date
+    )

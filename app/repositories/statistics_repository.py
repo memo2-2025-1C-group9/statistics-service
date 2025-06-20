@@ -62,7 +62,11 @@ def create_statistics(
 
 
 def get_average_grade(
-    db: Session, user_id: Optional[int] = None, course_id: Optional[str] = None
+    db: Session,
+    user_id: Optional[int] = None,
+    course_id: Optional[str] = None,
+    start_date=None,
+    end_date=None,
 ):
     base_query = db.query(func.avg(Statistics.calificacion)).filter(
         Statistics.calificacion.isnot(None)
@@ -73,11 +77,20 @@ def get_average_grade(
     if course_id is not None:
         base_query = base_query.filter(Statistics.course_id == course_id)
 
+    if start_date:
+        base_query = base_query.filter(Statistics.date >= start_date)
+    if end_date:
+        base_query = base_query.filter(Statistics.date <= end_date)
+
     return base_query.scalar() or 0.0
 
 
 def get_completion_stats(
-    db: Session, user_id: Optional[int] = None, course_id: Optional[str] = None
+    db: Session,
+    user_id: Optional[int] = None,
+    course_id: Optional[str] = None,
+    start_date=None,
+    end_date=None,
 ):
     base_query = db.query(Statistics)
 
@@ -86,28 +99,39 @@ def get_completion_stats(
     if course_id is not None:
         base_query = base_query.filter(Statistics.course_id == course_id)
 
+    if start_date:
+        base_query = base_query.filter(Statistics.date >= start_date)
+    if end_date:
+        base_query = base_query.filter(Statistics.date <= end_date)
+
     total = base_query.count()
     completed = base_query.filter(Statistics.entregado == True).count()
 
     return total, completed
 
 
-def get_course_statistics(db: Session, course_id: str):
-    return (
-        db.query(Statistics)
-        .filter(Statistics.course_id == course_id)
-        .order_by(Statistics.date.desc())
-        .all()
-    )
+def get_course_statistics(db: Session, course_id: str, start_date=None, end_date=None):
+    query = db.query(Statistics).filter(Statistics.course_id == course_id)
+    
+    if start_date:
+        query = query.filter(Statistics.date >= start_date)
+    if end_date:
+        query = query.filter(Statistics.date <= end_date)
+    
+    return query.order_by(Statistics.date.desc()).all()
 
 
-def get_user_course_statistics(db: Session, user_id: int, course_id: str):
-    return (
-        db.query(Statistics)
-        .filter(
-            Statistics.user_id == user_id,
-            Statistics.course_id == course_id,
-        )
-        .order_by(Statistics.date.desc())
-        .all()
+def get_user_course_statistics(
+    db: Session, user_id: int, course_id: str, start_date=None, end_date=None
+):
+    query = db.query(Statistics).filter(
+        Statistics.user_id == user_id,
+        Statistics.course_id == course_id,
     )
+
+    if start_date:
+        query = query.filter(Statistics.date >= start_date)
+    if end_date:
+        query = query.filter(Statistics.date <= end_date)
+    
+    return query.order_by(Statistics.date.desc()).all()

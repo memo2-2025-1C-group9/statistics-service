@@ -93,12 +93,16 @@ async def get_global_statistics(db: Session):
     }
 
 
-async def get_course_detailed_statistics(db: Session, course_id: str):
-    avg_grade = get_average_grade(db, course_id=course_id)
+async def get_course_detailed_statistics(
+    db: Session, course_id: str, start_date=None, end_date=None
+):
+    avg_grade = get_average_grade(
+        db, course_id=course_id, start_date=start_date, end_date=end_date
+    )
 
     # Obtener estadisticas de finalizacion
     total_assignments, completed_assignments = get_completion_stats(
-        db, course_id=course_id
+        db, course_id=course_id, start_date=start_date, end_date=end_date
     )
 
     completion_rate = (
@@ -106,8 +110,7 @@ async def get_course_detailed_statistics(db: Session, course_id: str):
         if total_assignments > 0
         else 0
     )
-
-    statistics = get_course_statistics(db, course_id)
+    statistics = get_course_statistics(db, course_id, start_date, end_date)
     return {
         "promedio_calificaciones": round(avg_grade, 2),
         "tasa_finalizacion": round(completion_rate, 2),
@@ -131,21 +134,32 @@ async def get_course_detailed_statistics(db: Session, course_id: str):
     }
 
 
-async def get_user_detailed_statistics(db: Session, user_id: int, course_id: str):
-    avg_grade = get_average_grade(db, user_id=user_id, course_id=course_id)
-
-    # Obtener estadisticas de finalizacion
-    total_assignments, completed_assignments = get_completion_stats(
-        db, user_id=user_id, course_id=course_id
+async def get_user_detailed_statistics(
+    db: Session, user_id: int, course_id: str, start_date=None, end_date=None
+):
+    avg_grade = get_average_grade(
+        db,
+        user_id=user_id,
+        course_id=course_id,
+        start_date=start_date,
+        end_date=end_date,
     )
 
+    total_assignments, completed_assignments = get_completion_stats(
+        db,
+        user_id=user_id,
+        course_id=course_id,
+        start_date=start_date,
+        end_date=end_date,
+    )
     completion_rate = (
         (completed_assignments / total_assignments * 100)
         if total_assignments > 0
         else 0
     )
-    statistics = get_user_course_statistics(db, user_id, course_id)
-
+    statistics = get_user_course_statistics(
+        db, user_id, course_id, start_date, end_date
+    )
     return {
         "promedio_calificaciones": round(avg_grade, 2),
         "tasa_finalizacion": round(completion_rate, 2),

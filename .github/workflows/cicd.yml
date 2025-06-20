@@ -119,7 +119,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-report
-          path: services/statistics-service/htmlcov/
+          path: htmlcov/
           retention-days: 1
 
       - name: Upload coverage to Codecov
@@ -143,7 +143,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage-report
-          path: services/statistics-service/htmlcov
+          path: htmlcov
 
       - name: Checkout GitHub Pages
         uses: actions/checkout@v4
@@ -155,7 +155,7 @@ jobs:
       - name: Update coverage report
         run: |
           mkdir -p pages/coverages/statistics-service
-          cp -r services/statistics-service/htmlcov/* pages/coverages/statistics-service/
+          cp -r htmlcov/* pages/coverages/statistics-service/
 
       - name: Commit and push changes
         working-directory: pages

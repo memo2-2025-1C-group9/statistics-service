@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.statistics_model import Statistics
 from typing import Optional
+from datetime import datetime
 
 
 def find_statistics_by_user_and_assessment_id(
@@ -45,6 +46,7 @@ def create_statistics(
     entregado: bool,
     calificacion: float = None,
     course_id: str = None,
+    date: datetime = None,
 ) -> Statistics:
     statistics = Statistics(
         user_id=user_id,
@@ -54,6 +56,7 @@ def create_statistics(
         entregado=entregado,
         calificacion=calificacion,
         course_id=course_id,
+        date=date,
     )
     db.add(statistics)
     db.commit()

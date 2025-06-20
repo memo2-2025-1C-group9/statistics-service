@@ -7,6 +7,7 @@ from app.main import app
 from app.db.base import Base
 from app.db.dependencies import get_db
 from app.repositories.statistics_repository import create_statistics
+from datetime import datetime
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 engine = create_engine(
@@ -57,6 +58,7 @@ def sample_statistics(db_session):
         entregado=True,
         calificacion=8.5,
         course_id="curso1",
+        date=datetime(2023, 10, 1),
     )
     create_statistics(
         db_session,
@@ -67,6 +69,7 @@ def sample_statistics(db_session):
         entregado=True,
         calificacion=9.0,
         course_id="curso1",
+        date=datetime(2023, 10, 5),
     )
     create_statistics(
         db_session,
@@ -77,6 +80,7 @@ def sample_statistics(db_session):
         entregado=True,
         calificacion=7.5,
         course_id="curso1",
+        date=datetime(2023, 10, 10),
     )
     create_statistics(
         db_session,
@@ -86,6 +90,7 @@ def sample_statistics(db_session):
         tipo="Tarea",
         entregado=False,
         course_id="curso1",
+        date=datetime(2023, 10, 15),
     )
 
     # Crear estadísticas para otro usuario en el mismo curso
@@ -98,6 +103,7 @@ def sample_statistics(db_session):
         entregado=True,
         calificacion=7.0,
         course_id="curso1",
+        date=datetime(2023, 10, 20),
     )
 
     # Crear estadísticas para otro curso
@@ -110,6 +116,7 @@ def sample_statistics(db_session):
         entregado=True,
         calificacion=8.0,
         course_id="curso2",
+        date=datetime(2023, 11, 1),
     )
 
 
@@ -195,3 +202,39 @@ def test_get_user_statistics_different_course(client: TestClient, sample_statist
     assert data["tasa_finalizacion"] == 100.0  # 1/1 * 100
     assert data["promedio_calificaciones"] == 8.0  # Calificacion de la unica tarea
     assert data["course_id"] == "curso2"
+
+
+def test_get_user_statistics_with_start_date(client: TestClient, sample_statistics):
+    response = client.get("/statistics/user/curso1/1?start_date=2023-10-10")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["logs"]) == 2
+    assert data["total_asignaciones"] == 2
+    assert data["asignaciones_completadas"] == 1
+    assert data["tasa_finalizacion"] == 50.0
+    assert data["promedio_calificaciones"] == pytest.approx(7.5, 0.01)  # Examen 1
+
+
+
+def test_get_user_statistics_with_end_date(client: TestClient, sample_statistics):
+    response = client.get("/statistics/user/curso1/1?end_date=2023-10-11")
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["logs"]) == 3
+    assert data["total_asignaciones"] == 3
+    assert data["asignaciones_completadas"] == 3
+    assert data["tasa_finalizacion"] == 100.0
+    assert data["promedio_calificaciones"] == pytest.approx(8.33, 0.01)  # Examen 1
+
+
+def test_get_user_statistics_with_date_range(client: TestClient, sample_statistics):
+    response = client.get(
+        "/statistics/user/curso1/1?start_date=2023-10-05&end_date=2023-10-12"
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data["logs"]) == 2
+    assert data["total_asignaciones"] == 2
+    assert data["asignaciones_completadas"] == 2
+    assert data["tasa_finalizacion"] == 100.0
+    assert data["promedio_calificaciones"] == pytest.approx(8.25, 0.01)  # Tarea 2 y Examen 1

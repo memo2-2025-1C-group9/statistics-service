@@ -63,13 +63,24 @@ def mock_get_course_users():
 
 
 def test_save_user_statistics_success(client, mock_validate_user, db_session):
+    tarea = Statistics(
+        user_id=1,
+        course_id="curso-123",
+        titulo="Tarea 1",
+        tipo="Tarea",
+        entregado=True,
+        calificacion=None,
+        assessment_id="tarea-456",
+    )
+    db_session.add(tarea)
+    db_session.commit()
+
     event_data = {
         "id_user": 1,
         "assessment_id": "tarea-456",
         "notification_type": "Tarea",
         "event": "Entregado",
-        "course_id": "curso-123",
-        "data": {"titulo": "Tarea 1", "entregado": True},
+        "data": {"entregado": True},
     }
 
     response = client.post(
@@ -118,13 +129,24 @@ def test_save_user_statistics_unauthorized(client, mock_validate_user):
 
 
 def test_save_user_statistics_with_grade(client, mock_validate_user, db_session):
+    tarea = Statistics(
+        user_id=1,
+        course_id="curso-123",
+        titulo="Examen 1",
+        tipo="Examen",
+        entregado=True,
+        calificacion=None,
+        assessment_id="tarea-456",
+    )
+    db_session.add(tarea)
+    db_session.commit()
+    
     event_data = {
         "id_user": 1,
         "assessment_id": "tarea-456",
         "notification_type": "Examen",
         "event": "Calificado",
-        "course_id": "curso-123",
-        "data": {"titulo": "Examen 1", "entregado": True, "nota": 8.5},
+        "data": {"entregado": True, "nota": 8.5},
     }
 
     response = client.post(

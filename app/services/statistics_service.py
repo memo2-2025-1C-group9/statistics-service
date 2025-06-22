@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from app.schemas.statistics_schemas import UserStatisticsEvent, CourseStatisticsEvent
 from app.services.courses_service import get_course_users
 from sqlalchemy.orm import Session
@@ -10,8 +11,6 @@ from app.repositories.statistics_repository import (
     get_course_statistics,
     get_user_course_statistics,
 )
-from typing import Dict, List
-import logging
 
 
 async def process_user_event(db: Session, event: UserStatisticsEvent):
@@ -33,16 +32,9 @@ async def process_user_event(db: Session, event: UserStatisticsEvent):
                 db, existing_stat, entregado=True, calificacion=event.data.nota
             )
     else:
-        # Crear nueva estadística
-        create_statistics(
-            db,
-            user_id=event.id_user,
-            assessment_id=event.assessment_id,
-            titulo=event.data.titulo,
-            tipo=event.notification_type,
-            entregado=True,
-            calificacion=event.data.nota,
-            course_id=event.course_id,
+        raise HTTPException(
+            status_code=404,
+            detail="No se encontró una estadística existente para este usuario y tarea/examen.",
         )
 
 

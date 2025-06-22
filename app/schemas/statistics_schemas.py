@@ -3,7 +3,7 @@ from typing import Literal, Optional
 
 
 class StatisticsEventData(BaseModel):
-    titulo: str
+    titulo: Optional[str] = None
     nota: Optional[float] = None
     entregado: bool = False
 
@@ -11,7 +11,6 @@ class StatisticsEventData(BaseModel):
 class UserStatisticsEvent(BaseModel):
     id_user: int
     assessment_id: str
-    course_id: str
     notification_type: Literal["Examen", "Tarea"]
     event: Literal["Entregado", "Calificado"]
     data: StatisticsEventData

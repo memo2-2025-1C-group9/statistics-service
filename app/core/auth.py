@@ -33,11 +33,11 @@ class ServiceAuth:
         try:
             async with httpx.AsyncClient() as client:
                 logger.info("Intentando autenticar servicio...")
-                logger.debug(f"URL: {self.base_url}/token/service")
+                logger.debug(f"URL: {self.base_url}/api/v1/token/service")
                 logger.debug(f"Username: {self.service_username}")
 
                 response = await client.post(
-                    f"{self.base_url}/token/service",
+                    f"{self.base_url}/api/v1/token/service",
                     data={
                         "username": self.service_username,
                         "password": self.service_password,

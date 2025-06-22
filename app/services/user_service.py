@@ -14,7 +14,7 @@ async def validate_user(token: str):
             logging.info(f"Validando identidad del usuario con el token: {token}...")
 
             response = await client.get(
-                f"{settings.AUTH_SERVICE_URL}/me/",
+                f"{settings.AUTH_SERVICE_URL}/api/v1/me/",
                 headers={"Authorization": f"Bearer {token}"},
             )
 

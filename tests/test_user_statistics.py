@@ -140,7 +140,7 @@ def test_save_user_statistics_with_grade(client, mock_validate_user, db_session)
     )
     db_session.add(tarea)
     db_session.commit()
-    
+
     event_data = {
         "id_user": 1,
         "assessment_id": "tarea-456",

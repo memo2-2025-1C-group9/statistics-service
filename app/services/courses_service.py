@@ -24,7 +24,10 @@ async def get_course_users(course_id: str):
                 course_data = response.json()
                 users_list = course_data.get("enrolled_users")
                 return users_list
-            return None
+            raise HTTPException(
+                status_code=response.status_code,
+                detail=f"Error al obtener los usuarios del curso: {response.text}",
+            )
 
         except httpx.RequestError as e:
             logging.error(f"Error al conectar con el servicio de cursos: {str(e)}")

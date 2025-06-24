@@ -32,7 +32,7 @@ jobs:
           pip install black
 
       - name: Run black
-        run: black --check app tests
+        run: black .
 
   test:
     runs-on: ubuntu-latest

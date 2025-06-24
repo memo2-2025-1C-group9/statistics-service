@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Literal, Optional
+from datetime import date
 
 
 class StatisticsEventData(BaseModel):
@@ -44,3 +45,10 @@ class CourseStatisticsEvent(BaseModel):
                 "data": {"titulo": "Tarea 1", "entregado": False, "nota": None},
             }
         }
+
+
+class ExportFilters(BaseModel):
+    user_id: Optional[int] = None
+    course_id: Optional[str] = None
+    start_date: Optional[date] = None
+    end_date: Optional[date] = None

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from app.models.statistics_model import Statistics
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -132,6 +132,27 @@ def get_user_course_statistics(
         Statistics.course_id == course_id,
     )
 
+    if start_date:
+        query = query.filter(Statistics.date >= start_date)
+    if end_date:
+        query = query.filter(Statistics.date <= end_date)
+
+    return query.order_by(Statistics.date.desc()).all()
+
+
+def get_all_statistics_with_filters(
+    db: Session,
+    user_id: Optional[int] = None,
+    course_id: Optional[str] = None,
+    start_date=None,
+    end_date=None,
+) -> List[Statistics]:
+    query = db.query(Statistics)
+
+    if user_id is not None:
+        query = query.filter(Statistics.user_id == user_id)
+    if course_id is not None:
+        query = query.filter(Statistics.course_id == course_id)
     if start_date:
         query = query.filter(Statistics.date >= start_date)
     if end_date:

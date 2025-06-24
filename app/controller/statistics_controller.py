@@ -1,11 +1,16 @@
 from sqlalchemy.orm import Session
-from app.schemas.statistics_schemas import UserStatisticsEvent, CourseStatisticsEvent
+from app.schemas.statistics_schemas import (
+    UserStatisticsEvent,
+    CourseStatisticsEvent,
+    ExportFilters,
+)
 from app.services.statistics_service import (
     process_user_event,
     process_course_event,
     get_global_statistics,
     get_course_detailed_statistics,
     get_user_detailed_statistics,
+    export_statistics_to_excel,
 )
 
 
@@ -33,3 +38,7 @@ async def handle_get_user_detailed_statistics(
     return await get_user_detailed_statistics(
         db, user_id, course_id, start_date, end_date
     )
+
+
+async def handle_export_statistics_to_excel(db: Session, filters: ExportFilters):
+    return await export_statistics_to_excel(db, filters)

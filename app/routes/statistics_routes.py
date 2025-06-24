@@ -3,8 +3,13 @@ import traceback
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
-from app.schemas.statistics_schemas import UserStatisticsEvent, CourseStatisticsEvent
+from app.schemas.statistics_schemas import (
+    UserStatisticsEvent,
+    CourseStatisticsEvent,
+    ExportFilters,
+)
 from app.db.dependencies import get_db
 from app.controller.statistics_controller import (
     handle_save_user_statistics,
@@ -12,9 +17,11 @@ from app.controller.statistics_controller import (
     handle_get_global_statistics,
     handle_get_course_detailed_statistics,
     handle_get_user_detailed_statistics,
+    handle_export_statistics_to_excel,
 )
 from app.controller.user_controller import handle_validate_user
 from datetime import date
+import io
 
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -157,6 +164,43 @@ async def get_user_detailed_statistics(
     except Exception as e:
         logging.error(
             f"Exception no manejada al obtener las estadisticas del usuario: {str(e)}"
+        )
+        logging.error(traceback.format_exc())
+
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error interno del servidor",
+        )
+
+
+@router.post("/statistics/export-excel")
+async def export_statistics_to_excel(
+    token: Annotated[str, Depends(oauth2_scheme)],
+    filters: ExportFilters,
+    db: Session = Depends(get_db),
+):
+    try:
+        try:
+            await handle_validate_user(token)
+        except Exception:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Credenciales de autenticación inválidas",
+            )
+
+        output, filename = await handle_export_statistics_to_excel(db, filters)
+
+        return StreamingResponse(
+            io.BytesIO(output.getvalue()),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename={filename}"},
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(
+            f"Exception no manejada al exportar estadisticas a Excel: {str(e)}"
         )
         logging.error(traceback.format_exc())
 
